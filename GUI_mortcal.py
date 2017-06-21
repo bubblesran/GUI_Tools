@@ -5,16 +5,24 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 
-# Main Frame
+# Application Class
 class MainApplication:
 	
 	def __init__(self, parent, *args, **kwargs):
+		#Main Frame
 		self.parent = parent
 		parent.title('Mortgage Calculator')
 		self.main = ttk.Frame(parent, padding="5 4")
 		self.main.grid(column=0, row=0, sticky=(N, W, E, S))
 		self.main.columnconfigure(0, weight=1)
 		self.main.rowconfigure(0, weight=1)
+		self.labels_widget()
+		self.inputs_widget()
+		self.outputs_widget()
+		self.buttons_widget()
+		self.main.pack()
+	
+	def labels_widget(self, *args, **kwargs):
 		#labels
 		self.prinlabel = ttk.Label(self.main, text='Principal: ')
 		self.prinlabel.grid(column=1, row=1, sticky=W)
@@ -32,6 +40,8 @@ class MainApplication:
 		self.pmonthlabel.grid(column=3, row=4, sticky=E)
 		self.incomlabel = ttk.Label(self.main, text='Required Income: ')
 		self.incomlabel.grid(column=3, row=5, sticky=E)
+	
+	def inputs_widget(self, *args, **kwargs):
 		# inputs
 		vcmd = (self.main.register(vfunc), '%d', '%P', '%S')
 		self.principal = StringVar()
@@ -43,6 +53,8 @@ class MainApplication:
 		self.duration = StringVar()
 		self.duration_entry = ttk.Entry(self.main, width=12, textvariable=self.duration, validate='key', validatecommand=(vcmd))
 		self.duration_entry.grid(column=2, row=3, sticky=(W, E))
+	
+	def outputs_widget(self, *args, **kwargs):
 		# outputs
 		self.monthly = StringVar()
 		self.total = StringVar()
@@ -59,12 +71,13 @@ class MainApplication:
 		self.pm_l.grid(column=4, row=4, sticky=W)
 		self.income_l = ttk.Label(self.main, width=15, textvariable=self.income)
 		self.income_l.grid(column=4, row=5, sticky=W)
+	
+	def buttons_widget(self, *args, **kwargs):
 		#buttons
 		self.runbutton = ttk.Button(self.main, text='run', command=self.pressreturn)
 		self.runbutton.grid(column=1, row=4)
 		self.resetbutton = ttk.Button(self.main, text='reset', command=self.reset)
 		self.resetbutton.grid(column=1, row=5)
-		self.main.pack()
 	
 	def pressreturn(self, *args, **kwargs):
 		entry_list = [self.principal, self.interest, self.duration]
