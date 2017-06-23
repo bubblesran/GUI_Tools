@@ -4,81 +4,153 @@ from tkinter import ttk
 from tkinter import messagebox
 import math
 
-root = Tk()
-root.title('Calculator')
-
-# Main Frame setting
-mainframe = ttk.Frame(root, padding="8 4")
-mainframe.grid(column=0, row=0, sticky=(N, W, E, S))
-mainframe.columnconfigure(0, weight=1)
-mainframe.rowconfigure(0, weight=1)
-
-# Label setting
-ttk.Label(mainframe, text="Category：").grid(column=1, row=1, sticky=W)
-ttk.Label(mainframe, text="Item：").grid(column=3, row=1, sticky=E)
-ttk.Label(mainframe, text="Direction：").grid(column=1, row=2, sticky=W)
-ttk.Label(mainframe, text="Open：").grid(column=1, row=3, sticky=W)
-ttk.Label(mainframe, text="Close：").grid(column=1, row=4, sticky=W)
-ttk.Label(mainframe, text="Volume：").grid(column=1, row=5, sticky=W)
-ttk.Label(mainframe, text="Duration：").grid(column=1, row=6, sticky=W)
-ttk.Label(mainframe, text="Balance：").grid(column=1, row=7, sticky=W)
-ttk.Label(mainframe, text="Margin：").grid(column=3, row=3, sticky=E)
-ttk.Label(mainframe, text="Swap：").grid(column=3, row=4, sticky=E)
-ttk.Label(mainframe, text="P&L：").grid(column=3, row=5, sticky=E)
-ttk.Label(mainframe, text="Affordable Rate：").grid(column=3, row=6, sticky=E)
-
-# Text Entries setting
-def vfunc(action, value_if_allowed, text):
-	if action == '1':
-		if text in '0123456789.-':
-			try: 
-				float(value_if_allowed)
-				return True
-			except ValueError:
+class Mainapp:
+	
+	def __init__(self, master):
+		# Main Frame setting
+		self.master = master
+		master.title('Calculator')
+		self.main = ttk.Frame(master, padding="8 4")
+		self.main.grid(column=0, row=0, sticky=(N, W, E, S))
+		self.main.columnconfigure(0, weight=1)
+		self.main.rowconfigure(0, weight=1)
+		self.category = {'metal':['llg','lls'],
+		'energy':['oil','oil2000','gas'], 
+		'fx':['eurusd','eurjpy','usdjpy','audusd','gbpusd','eurgbp','usdcny','nzdusd','usdcad','usdswd'],
+		'index':['d300','sp500','a50','f100','j225','g30'],
+		'stock':['apple','ali']}
+		self.labels_widget()
+		self.entries_widget()
+		self.combos_widget()
+		self.outputs_widget()
+		self.buttons_widget()
+	
+	def labels_widget(self):
+		# Labels setting
+		self.category_label = ttk.Label(self.main, text="Category：")
+		self.category_label.grid(column=1, row=1, sticky=W)
+		self.buy_label = ttk.Label(self.main, text="Direction：")
+		self.buy_label.grid(column=1, row=2, sticky=W)
+		self.open_label = ttk.Label(self.main, text="Open：")
+		self.open_label.grid(column=1, row=3, sticky=W)
+		self.close_label = ttk.Label(self.main, text="Close：")
+		self.close_label.grid(column=1, row=4, sticky=W)
+		self.vol_label = ttk.Label(self.main, text="Volume：")
+		self.vol_label.grid(column=1, row=5, sticky=W)
+		self.duration_label = ttk.Label(self.main, text="Duration：")
+		self.duration_label.grid(column=1, row=6, sticky=W)
+		self.bal_label = ttk.Label(self.main, text="Balance：")
+		self.bal_label.grid(column=1, row=7, sticky=W)
+		self.item_label = ttk.Label(self.main, text="Item：")
+		self.item_label.grid(column=3, row=1, sticky=E)
+		self.margin_label = ttk.Label(self.main, text="Margin：")
+		self.margin_label.grid(column=3, row=3, sticky=E)
+		self.swap_label = ttk.Label(self.main, text="Swap：")
+		self.swap_label.grid(column=3, row=4, sticky=E)
+		self.pl_label = ttk.Label(self.main, text="P&L：")
+		self.pl_label.grid(column=3, row=5, sticky=E)
+		self.aff_label = ttk.Label(self.main, text="Affordable Rate：")
+		self.aff_label.grid(column=3, row=6, sticky=E)
+	
+	def entries_widget(self):
+		#Entries setting
+		vcmd = (self.main.register(vfunc), '%d', '%P', '%S')
+		self.open = StringVar()
+		self.open_entry = ttk.Entry(self.main, width=12, textvariable=self.open, validate='key', validatecommand=(vcmd))
+		self.open_entry.grid(column=2, row=3, sticky=(W, E))
+		self.close = StringVar()
+		self.close_entry = ttk.Entry(self.main, width=12, textvariable=self.close, validate='key', validatecommand=(vcmd))
+		self.close_entry.grid(column=2, row=4, sticky=(W, E))
+		self.lot = StringVar()
+		self.lot_entry = ttk.Entry(self.main, width=12, textvariable=self.lot, validate='key', validatecommand=(vcmd))
+		self.lot_entry.grid(column=2, row=5, sticky=(W, E))
+		self.duration = StringVar()
+		self.duration_entry = ttk.Entry(self.main, width=12, textvariable=self.duration, validate='key', validatecommand=(vcmd))
+		self.duration_entry.grid(column=2, row=6, sticky=(W, E))
+		self.balance = StringVar()
+		self.balance_entry = ttk.Entry(self.main, width=12, textvariable=self.balance, validate='key', validatecommand=(vcmd))
+		self.balance_entry.grid(column=2, row=7, sticky=(W, E))
+	
+	def combos_widget(self):
+		# combo setting
+		self.categorycombo = ttk.Combobox(self.main, width=12, values=list(self.category.keys()))
+		self.categorycombo.grid(column=2, row=1)
+		self.itemcombo = ttk.Combobox(self.main, width=12)
+		self.itemcombo.grid(column=4, row=1)
+		self.inoutcombo = ttk.Combobox(self.main, width=12, values=['buy','sell'])
+		self.inoutcombo.grid(column=2, row=2)
+		self.categorycombo.bind('<<ComboboxSelected>>', self.eventfunction)
+	
+	def eventfunction(self, *args, **kwargs):
+		#combo interaction
+		self.itemcombo['values'] = self.category[self.categorycombo.get()]
+	
+	def outputs_widget(self):
+		#outputs setting
+		self.margin_o = StringVar()
+		self.interest_o = StringVar()
+		self.net_o = StringVar()
+		self.aford_o = StringVar()
+		self.margin_l = ttk.Label(self.main, textvariable=self.margin_o)
+		self.margin_l.grid(column=4, row=3, sticky=(W, E))
+		self.interest_l = ttk.Label(self.main, textvariable=self.interest_o)
+		self.interest_l.grid(column=4, row=4, sticky=(W, E))
+		self.net_l = ttk.Label(self.main, textvariable=self.net_o)
+		self.net_l.grid(column=4, row=5, sticky=(W, E))
+		self.aford_l = ttk.Label(self.main, textvariable=self.aford_o)
+		self.aford_l.grid(column=4, row=6, sticky=(W, E))
+	
+	def buttons_widget(self):
+		#buttons setting
+		self.reset_button = ttk.Button(self.main, text='reset', command=self.reset)
+		self.reset_button.grid(column=2, row=8)
+		self.run_button = ttk.Button(self.main, text='run', command=self.pressreturn)
+		self.run_button.grid(column=1, row=8)
+	
+	def reset(self, *args, **kwargs):
+		self.open_entry.delete(0,END)
+		self.close_entry.delete(0,END)
+		self.lot_entry.delete(0,END)
+		self.duration_entry.delete(0,END)
+		self.balance_entry.delete(0,END)
+		self.categorycombo.set('')
+		self.itemcombo.set('')
+		self.inoutcombo.set('')
+		self.margin_o.set('')
+		self.interest_o.set('')
+		self.net_o.set('')
+		self.aford_o.set('')
+	
+	def pressreturn(self, *args, **kwargs):
+		count = 0
+		entry_list = [child for child in self.main.winfo_children() if isinstance(child, Entry)]
+		for entry in entry_list:
+			if not entry.get():
+				messagebox.showinfo(title='Warning', message = 'Entry all values')
 				return False
-		else: return False
-	else: return True
-vcmd = (mainframe.register(vfunc), '%d', '%P', '%S')
-
-open = StringVar()
-open_entry = ttk.Entry(mainframe, width=12, textvariable=open, validate='key', validatecommand=(vcmd))
-open_entry.grid(column=2, row=3, sticky=(W, E))
-close = StringVar()
-close_entry = ttk.Entry(mainframe, width=12, textvariable=close, validate='key', validatecommand=(vcmd))
-close_entry.grid(column=2, row=4, sticky=(W, E))
-lot = StringVar()
-lot_entry = ttk.Entry(mainframe, width=12, textvariable=lot, validate='key', validatecommand=(vcmd))
-lot_entry.grid(column=2, row=5, sticky=(W, E))
-duration = StringVar()
-duration_entry = ttk.Entry(mainframe, width=12, textvariable=duration, validate='key', validatecommand=(vcmd))
-duration_entry.grid(column=2, row=6, sticky=(W, E))
-balance = StringVar()
-balance_entry = ttk.Entry(mainframe, width=12, textvariable=balance, validate='key', validatecommand=(vcmd))
-balance_entry.grid(column=2, row=7, sticky=(W, E))
-
-# combo setting
-category = {'metal':['llg','lls'],
-'energy':['oil','oil2000','gas'], 
-'fx':['eurusd','eurjpy','usdjpy','audusd','gbpusd','eurgbp','usdcny','nzdusd','usdcad','usdswd'],
-'index':['d300','sp500','a50','f100','j225','g30'],
-'stock':['apple','ali']}
-
-categorycombo = ttk.Combobox(mainframe, width=12, values=list(category.keys()))
-categorycombo.grid(column=2, row=1)
-itemcombo = ttk.Combobox(mainframe, width=12)
-itemcombo.grid(column=4, row=1)
-
-def eventfunction(event):
-	itemcombo['values'] = category[categorycombo.get()]
-
-categorycombo.bind('<<ComboboxSelected>>', eventfunction)
-
-inoutcombo = ttk.Combobox(mainframe, width=12, values=['buy','sell'])
-inoutcombo.grid(column=2, row=2)
+				break
+			else: count+=1
+		if count>=8:
+			self.runbutton()
+	
+	def runbutton(self):
+		vopen = float(self.open.get())
+		vclose = float(self.close.get())
+		vlot = float(self.lot.get())
+		vduration = int(self.duration.get())
+		vbalance = float(self.balance.get())
+		direction = self.inoutcombo.get()
+		item = self.itemcombo.get()
+		prod = product(item)
+		margin, interest, net, aford = calculator(prod, direction, vopen, vclose, vlot, vduration, vbalance)
+		self.margin_o.set(margin)
+		self.interest_o.set(interest)
+		self.net_o.set(net)
+		self.aford_o.set(aford)
 
 # product class
 class product():
-
+	
 	def __init__(self, name):
 		self.name = name
 	
@@ -128,68 +200,24 @@ def calculator(item, direction, open, close, lot, duration, balance):
 		aford = (balance - lot*margin*0.3)/(lot*item.unit())
 	return margin, interest, net, aford
 
-# output setting
-def runbutton(*args):
-	vopen = float(open.get())
-	vclose = float(close.get())
-	vlot = float(lot.get())
-	vduration = int(duration.get())
-	vbalance = float(balance.get())
-	direction = inoutcombo.get()
-	item = itemcombo.get()
-	prod = product(item)
-	margin, interest, net, aford = calculator(prod, direction, vopen, vclose, vlot, vduration, vbalance)
-	margin_o.set(margin)
-	interest_o.set(interest)
-	net_o.set(net)
-	aford_o.set(aford)
+def vfunc(action, value_if_allowed, text):
+	if action == '1':
+		if text in '0123456789.-':
+			try: 
+				float(value_if_allowed)
+				return True
+			except ValueError:
+				return False
+		else: return False
+	else: return True
 
-margin_o = StringVar()
-interest_o = StringVar()
-net_o = StringVar()
-aford_o = StringVar()
-
-margin_l = ttk.Label(mainframe, textvariable=margin_o)
-margin_l.grid(column=4, row=3, sticky=(W, E))
-interest_l = ttk.Label(mainframe, textvariable=interest_o)
-interest_l.grid(column=4, row=4, sticky=(W, E))
-net_l = ttk.Label(mainframe, textvariable=net_o)
-net_l.grid(column=4, row=5, sticky=(W, E))
-aford_l = ttk.Label(mainframe, textvariable=aford_o)
-aford_l.grid(column=4, row=6, sticky=(W, E))
-
-ttk.Button(mainframe, text='run', command=runbutton).grid(column=1, row=8)
-
-# Reset function
-def reset(*args):
-	open_entry.delete(0,END)
-	close_entry.delete(0,END)
-	lot_entry.delete(0,END)
-	duration_entry.delete(0,END)
-	balance_entry.delete(0,END)
-	categorycombo.set('')
-	itemcombo.set('')
-	inoutcombo.set('')
-	margin_o.set('')
-	interest_o.set('')
-	net_o.set('')
-	aford_o.set('')
-
-ttk.Button(mainframe, text='reset', command=reset).grid(column=2, row=8)
-
-# Enter Button setting
-entry_list = [child for child in mainframe.winfo_children() if isinstance(child, Entry)]
-def pressreturn(*args):
-	count = 0
-	for entry in entry_list:
-		if not entry.get():
-			 messagebox.showinfo(title='Warning', message = 'Entry all values')
-			 break
-		else: count+=1
-	if count>=8:
-		runbutton()
-root.bind('<Return>', pressreturn)
+def main():
+	root = Tk()
+	app = Mainapp(root)
+	for child in app.main.winfo_children(): child.grid_configure(padx=5, pady=5)
+	root.bind('<Return>', app.pressreturn)
+	root.mainloop()
 
 # Start the application
-for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
-root.mainloop()
+if __name__ == '__main__':
+	main()
